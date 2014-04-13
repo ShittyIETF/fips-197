@@ -1,0 +1,75 @@
+// Section 4. Mathematical Preliminaries
+// Finite field arithmetic over 2^8
+
+namespace gf_2_8 {
+  // 4.1 Addition
+  // Addition is defined as xor operation
+  Byte add(Byte a, Byte b) {
+    return a^b;
+  }
+
+  // 4.2 Multiplication
+  // Defined as polynomial multiplication modulo m(x) = x^8 + x^4 + x^3 + x + 1
+  Byte mul(Byte a, Byte b) {
+    const unsigned short m = 0b100011011;
+    unsigned short a2 = a;
+    unsigned short res = 0;
+
+    for (int n = 0; n < 8; ++n) {
+      if (b & 1) {
+        res ^= a2;
+      }
+      b >>= 1;
+      a2 <<= 1;
+    }
+
+    // Mod
+    for (int n = 15, s = 7; n >= 8; --n, --s) {
+      if (res & (1u << n)) {
+        res ^= (m << s);
+      }
+    }
+
+    return (Byte)res;
+  }
+
+  struct Polynomial : public Vec4 {
+    Polynomial()
+    {
+    }
+
+    // TODO this is a shitty way to initialize
+    Polynomial(Byte x0, Byte x1, Byte x2, Byte x3)
+    {
+      (*this)[0] = x0;
+      (*this)[1] = x1;
+      (*this)[2] = x2;
+      (*this)[3] = x3;
+    }
+
+    Vec4& base() {
+      return static_cast<Vec4&>(*this);
+    }
+  };
+
+  Polynomial add(Polynomial a, Polynomial b) {
+    Polynomial c;
+    for (int i = 0; i < 4; ++i) {
+      c[i] = a[i] ^ b[i];
+    }
+    return c;
+  }
+
+  Polynomial mul(Polynomial a, Polynomial b) {
+    Polynomial res;
+
+    for (int i = 0; i < 4; ++i) {
+      for (int j = 0; j < 4; ++j) {
+        int ri = (i+j) % 4;
+        res[ri] = add(res[ri], mul(a[i], b[j]));
+      }
+    }
+
+    return res;
+  }
+}

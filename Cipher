@@ -1,0 +1,76 @@
+
+namespace Cipher {
+  // AES counts (Fig. 4)
+  template <int N> struct Cipher;
+  template <> struct Cipher<128> {
+    enum {
+      key_length = 4,
+      block_size = 4,
+      num_rounds = 10,
+      expansion_length = block_size * (num_rounds + 1)
+    };
+  };
+  template <> struct Cipher<196> {
+    enum {
+      key_length = 6,
+      block_size = 4,
+      num_rounds = 12,
+      expansion_length = block_size * (num_rounds + 1)
+    };
+  };
+  template <> struct Cipher<256> {
+    enum {
+      key_length = 8,
+      block_size = 4,
+      num_rounds = 14,
+      expansion_length = block_size * (num_rounds + 1)
+    };
+  };
+
+  template <int N>
+  struct CipherKey
+    : public array<Vec4, Cipher<N>::key_length>
+  {
+  };
+
+  template <int N>
+  struct CipherKeyExpansion
+    : public array<Vec4, Cipher<N>::expansion_length>
+  {
+  };
+
+  Byte round_constant[11] = {
+    0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36
+  };
+
+  template <int N>
+  CipherKeyExpansion<N> expandKey(const CipherKey<N> &key) {
+    CipherKeyExpansion<N> r;
+    Vec4 temp;
+
+    for (int i = 0; i < Cipher<N>::key_length; ++i) {
+      r[i] = key[i];
+    }
+
+    for (int i = Cipher<N>::key_length; i < Cipher<N>::expansion_length; ++i) {
+      temp = r[i-1];
+      if (i % Cipher<N>::key_length == 0) {
+        // TODO make this better
+        Polynomial p1;
+        p1.base() = subWord(rotWord(temp));
+        // TODO store round_constant as Vec4?
+        Polynomial p2(round_constant[i / Cipher<N>::key_length], 0 , 0, 0);
+        temp = add(p1, p2).base();
+      } else if (Cipher<N>::key_length > 6 && i % Cipher<N>::key_length == 4) {
+        temp = subWord(temp);
+      }
+      // TODO make this better
+      Polynomial p1, p2;
+      p1.base() = r[i - Cipher<N>::key_length];
+      p2.base() = temp;
+      r[i] = add(p1, p2).base();
+    }
+
+    return r;
+  }
+}
