@@ -10,7 +10,7 @@ namespace Cipher {
       expansion_length = block_size * (num_rounds + 1)
     };
   };
-  template <> struct Cipher<196> {
+  template <> struct Cipher<192> {
     enum {
       key_length = 6,
       block_size = 4,
