@@ -1,0 +1,2 @@
+Each test is a program with main method.
+Tests should return 0 if they run successfully.
