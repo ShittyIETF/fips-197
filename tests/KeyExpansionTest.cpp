@@ -118,6 +118,7 @@ void testExpansion() {
     // Not-equal, fail
     printf("%d-bit Key Expansion Test -> FAIL\n", N);
     anyTestFailed = true;
+    return;
   }
 
   // if no fails occurred, pass
