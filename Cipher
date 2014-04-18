@@ -37,6 +37,39 @@ struct Cipher {
   struct CipherKey :          public array<Vec4, Cipher<N>::key_length> {};
   struct CipherKeyExpansion : public array<Vec4, Cipher<N>::expansion_length> {};
 
+  static CipherKeyExpansion expandKey(const CipherKey &key) {
+    static Byte round_constant[11] = {
+      0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36
+    };
+
+    CipherKeyExpansion r;
+    Vec4 temp;
+
+    for (int i = 0; i < key_length; ++i) {
+      r[i] = key[i];
+    }
+
+    for (int i = key_length; i < expansion_length; ++i) {
+      temp = r[i-1];
+      if (i % key_length == 0) {
+        // TODO make this better
+        Polynomial p1;
+        p1.base() = subWord(rotWord(temp));
+        // TODO store round_constant as Vec4?
+        Polynomial p2(round_constant[i / key_length], 0 , 0, 0);
+        temp = add(p1, p2).base();
+      } else if (key_length > 6 && i % key_length == 4) {
+        temp = subWord(temp);
+      }
+      // TODO make this better
+      Polynomial p1, p2;
+      p1.base() = r[i - key_length];
+      p2.base() = temp;
+      r[i] = add(p1, p2).base();
+    }
+
+    return r;
+  }
   Block encrypt(const CipherKey key, const Block &input);
   Block decrypt(const CipherKey key, const Block &input);
 
@@ -46,37 +79,3 @@ struct Cipher {
 
 
 
-Byte round_constant[11] = {
-  0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36
-};
-
-template <int N>
-typename Cipher<N>::CipherKeyExpansion expandKey(const typename Cipher<N>::CipherKey &key) {
-  typename Cipher<N>::CipherKeyExpansion r;
-  Vec4 temp;
-
-  for (int i = 0; i < Cipher<N>::key_length; ++i) {
-    r[i] = key[i];
-  }
-
-  for (int i = Cipher<N>::key_length; i < Cipher<N>::expansion_length; ++i) {
-    temp = r[i-1];
-    if (i % Cipher<N>::key_length == 0) {
-      // TODO make this better
-      Polynomial p1;
-      p1.base() = subWord(rotWord(temp));
-      // TODO store round_constant as Vec4?
-      Polynomial p2(round_constant[i / Cipher<N>::key_length], 0 , 0, 0);
-      temp = add(p1, p2).base();
-    } else if (Cipher<N>::key_length > 6 && i % Cipher<N>::key_length == 4) {
-      temp = subWord(temp);
-    }
-    // TODO make this better
-    Polynomial p1, p2;
-    p1.base() = r[i - Cipher<N>::key_length];
-    p2.base() = temp;
-    r[i] = add(p1, p2).base();
-  }
-
-  return r;
-}

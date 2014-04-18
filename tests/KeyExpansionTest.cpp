@@ -108,7 +108,7 @@ void testExpansion() {
   }
 
   // Expand the key into `exp`
-  typename Cipher<N>::CipherKeyExpansion exp = expandKey<N>(key);
+  typename Cipher<N>::CipherKeyExpansion exp = Cipher<N>::expandKey(key);
   string actualExpHex = hexaString<expansion_length>(
     static_cast< array<Vec4, expansion_length >& >(exp)
   ).c_str();

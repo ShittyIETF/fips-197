@@ -20,7 +20,7 @@ using namespace Transformations;
 
 IOBlock aes128(IOBlock input, Cipher<128>::CipherKey key)
 {
-  Cipher<128>::CipherKeyExpansion exp = expandKey<128>(key);
+  Cipher<128>::CipherKeyExpansion exp = Cipher<128>::expandKey(key);
 
   State st;
   st << input;
