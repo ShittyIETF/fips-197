@@ -16,12 +16,11 @@ using namespace gf_2_8;
 using namespace Transformations;
 
 #include "Cipher"
-using namespace Cipher;
 
 
-IOBlock aes128(IOBlock input, CipherKey<128> key)
+IOBlock aes128(IOBlock input, Cipher<128>::CipherKey key)
 {
-  CipherKeyExpansion<128> exp = expandKey(key);
+  Cipher<128>::CipherKeyExpansion exp = expandKey<128>(key);
 
   State st;
   st << input;
@@ -48,7 +47,6 @@ int main()
   printf("Expected: c1\n");
   printf("Actual:   %x\n", gf_2_8::mul(0x57u, 0x83u));
 
-  testExpansions();
 
   return 0;
 }

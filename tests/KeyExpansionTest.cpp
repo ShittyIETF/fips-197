@@ -16,7 +16,6 @@ using namespace gf_2_8;
 using namespace Transformations;
 
 #include "Cipher"
-using namespace Cipher;
 
 bool anyTestFailed = false;
 
@@ -95,12 +94,13 @@ char KeyExpansionExample<256>::expansionStr[] =
 template <int N>
 void testExpansion() {
   enum {
-    key_length =       ::Cipher::Cipher<N>::key_length,
-    expansion_length = ::Cipher::Cipher<N>::expansion_length,
+    key_length =       Cipher<N>::key_length,
+    expansion_length = Cipher<N>::expansion_length,
   };
 
   // Copy data to CipherKey structure
-  CipherKey<N> key;
+  // TODO remove typename somehow
+  typename Cipher<N>::CipherKey key;
   for (int c = 0; c < key_length; ++c) {
     for (int r = 0; r < 4; ++r) {
       key[c][r] = KeyExpansionExample<N>::key[4*c + r];
@@ -108,7 +108,7 @@ void testExpansion() {
   }
 
   // Expand the key into `exp`
-  CipherKeyExpansion<N> exp = expandKey(key);
+  typename Cipher<N>::CipherKeyExpansion exp = expandKey<N>(key);
   string actualExpHex = hexaString<expansion_length>(
     static_cast< array<Vec4, expansion_length >& >(exp)
   ).c_str();
