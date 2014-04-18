@@ -42,6 +42,16 @@ struct Block : public array<Vec4, 4> {
   Byte& operator()(int row, int col) {
     return (*this)[col][row];
   }
+
+  // TODO check if there is a better (non-pointer) way to pass the roundKey
+  void addRoundKey(const Vec4 *roundKey) {
+    for (int c = 0; c < 4; ++c) {
+      for (int r = 0; r < 4; ++r) {
+        (*this)[c][r] ^= roundKey[c][r];
+      }
+    }
+  }
 };
 
-struct State : public Block {};
+// TODO remove this
+typedef Block State;

@@ -70,8 +70,28 @@ struct Cipher {
 
     return r;
   }
-  Block encrypt(const CipherKey key, const Block &input);
-  Block decrypt(const CipherKey key, const Block &input);
+
+  static Block encrypt(const CipherKeyExpansion &key, const Block &input) {
+    Block state = input;
+    state.addRoundKey(&key[0]);
+
+    for (int round = 1; round < num_rounds; ++round) {
+      // TODO: make these object oriented
+      state = subBytes(state);
+      state = shiftRows(state);
+      state = mixColumns(state);
+      state.addRoundKey(&key[4 * round]);
+    }
+
+    // No mixColumns at the final round
+    state = subBytes(state);
+    state = shiftRows(state);
+    state.addRoundKey(&key[4 * num_rounds]);
+
+    return state;
+  }
+
+  static Block decrypt(const CipherKeyExpansion &key, const Block &input);
 
 
 };
