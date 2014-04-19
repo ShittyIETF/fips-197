@@ -34,9 +34,26 @@ struct Cipher {
     expansion_length = block_size * (num_rounds + 1)
   };
 
-  // TODO don't use inheritance for types like array<>
-  struct CipherKey :          public array<Vec4, Cipher<N>::key_length> {};
-  struct CipherKeyExpansion : public array<Vec4, Cipher<N>::expansion_length> {};
+  struct CipherKey {
+    array<Vec4, Cipher<N>::key_length> cols;
+
+    Vec4& operator[](int i) {
+      return cols[i];
+    }
+    const Vec4& operator[](int i) const {
+      return cols[i];
+    }
+  };
+  struct CipherKeyExpansion {
+    array<Vec4, Cipher<N>::expansion_length> cols;
+
+    Vec4& operator[](int i) {
+      return cols[i];
+    }
+    const Vec4& operator[](int i) const {
+      return cols[i];
+    }
+  };
 
   static CipherKeyExpansion expandKey(const CipherKey &key) {
     static Byte round_constant[11] = {
