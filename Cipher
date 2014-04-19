@@ -54,12 +54,13 @@ struct Cipher {
       if (i % key_length == 0) {
         // TODO make this better
         Polynomial p1;
-        p1.base() = subWord(rotWord(temp));
+        p1.base() = temp.rotWord()
+                        .subWord();
         // TODO store round_constant as Vec4?
         Polynomial p2(round_constant[i / key_length], 0 , 0, 0);
         temp = add(p1, p2).base();
       } else if (key_length > 6 && i % key_length == 4) {
-        temp = subWord(temp);
+        temp.subWord();
       }
       // TODO make this better
       Polynomial p1, p2;
@@ -76,24 +77,21 @@ struct Cipher {
     state.addRoundKey(&key[0]);
 
     for (int round = 1; round < num_rounds; ++round) {
-      // TODO: make these object oriented
-      state = subBytes(state);
-      state = shiftRows(state);
-      state = mixColumns(state);
-      state.addRoundKey(&key[4 * round]);
+      state.subBytes()
+           .shiftRows()
+           .mixColumns()
+           .addRoundKey(&key[4 * round]);
     }
 
     // No mixColumns at the final round
-    state = subBytes(state);
-    state = shiftRows(state);
-    state.addRoundKey(&key[4 * num_rounds]);
+    state.subBytes()
+         .shiftRows()
+         .addRoundKey(&key[4 * num_rounds]);
 
     return state;
   }
 
   static Block decrypt(const CipherKeyExpansion &key, const Block &input);
-
-
 };
 
 

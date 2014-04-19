@@ -1,6 +1,9 @@
+#pragma once
+
 namespace Transformations {
 
   // Subtutition box, and its inverse
+  // TODO move those into c++ file?
   Byte sBox[256] = {
      0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76,
      0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0,
@@ -39,79 +42,13 @@ namespace Transformations {
      0x17, 0x2B, 0x04, 0x7E, 0xBA, 0x77, 0xD6, 0x26, 0xE1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0C, 0x7D
   };
 
-  Byte subByte(Byte a) {
-    return sBox[a];
+  inline void subByte(Byte *a) {
+    *a = sBox[*a];
   }
 
-  Byte subByteInv(Byte a) {
-    return sBoxInv[a];
+  inline void subByteInv(Byte *a) {
+    *a = sBoxInv[*a];
   }
 
-  Vec4 subWord(Vec4 a) {
-    Vec4 r;
-    for (int i = 0; i < 4; ++i) {
-      r[i] = sBox[a[i]];
-    }
-    return r;
-  }
-  Vec4 subWordInv(Vec4 a) {
-    Vec4 r;
-    for (int i = 0; i < 4; ++i) {
-      r[i] = sBoxInv[a[i]];
-    }
-    return r;
-  }
 
-  Vec4 rotWord(Vec4 a) {
-    Vec4 r;
-    for (int i = 0; i < 4; ++i) {
-      r[i] = a[(i+1)%4];
-    }
-    return r;
-  }
-
-  Block subBytes(Block s) {
-    Block r;
-    for (int i = 0; i < 4; ++i) {
-      for (int j = 0; j < 4; ++j) {
-        r[i][j] = subByte(s[i][j]);
-      }
-    }
-    return r;
-  }
-
-  Block subBytesInv(Block s) {
-    Block r;
-    for (int i = 0; i < 4; ++i) {
-      for (int j = 0; j < 4; ++j) {
-        r[i][j] = subByteInv(s[i][j]);
-      }
-    }
-    return r;
-  }
-
-  Block shiftRows(Block s) {
-    Block res;
-    for (int r = 0; r < 4; ++r) {
-      for (int c = 0; c < 4; ++c) {
-        res[c][r] = s[(c+r)%4][r];
-      }
-    }
-    return res;
-  }
-
-  Block mixColumns(Block s) {
-    static const gf_2_8::Polynomial constPoly(0x02, 0x01, 0x01, 0x03);
-    Block res;
-
-    for (int c = 0; c < 4; ++c) {
-      gf_2_8::Polynomial col;
-      col.base() = s[c];
-
-      gf_2_8::Polynomial newCol = gf_2_8::mul(constPoly, col);
-      res[c] = newCol.base();
-    }
-
-    return res;
-  }
 }

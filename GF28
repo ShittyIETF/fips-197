@@ -1,3 +1,4 @@
+#pragma once
 // Section 4. Mathematical Preliminaries
 // Finite field arithmetic over 2^8
 
