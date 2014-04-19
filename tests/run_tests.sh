@@ -8,3 +8,6 @@ g++ -std=c++11 -I ../ KeyExpansionTest.cpp -o KeyExpansionTest && ./KeyExpansion
 
 # Compile & Run CipherTest
 g++ -std=c++11 -I ../ CipherTest.cpp -o CipherTest && ./CipherTest
+
+# Compile & Run ExampleVectorsTest
+g++ -std=c++11 -I ../ ExampleVectorsTest.cpp -o ExampleVectorsTest && ./ExampleVectorsTest
