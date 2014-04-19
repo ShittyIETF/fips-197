@@ -1,11 +1,10 @@
 #! /bin/bash
 
+# Compile & Run GF(2^8) Test
+g++ -std=c++11 -I ../ GF_2_8_Test.cpp -o GF_2_8_Test && ./GF_2_8_Test
+
 # Compile & Run KeyExpansionTest
 g++ -std=c++11 -I ../ KeyExpansionTest.cpp -o KeyExpansionTest && ./KeyExpansionTest
 
 # Compile & Run CipherTest
 g++ -std=c++11 -I ../ CipherTest.cpp -o CipherTest && ./CipherTest
-
-# TODO this is not part of the test suite
-# Compile & Run main
-g++ -std=c++11 -I ../ ../aes128.cpp -o aes128 && ./aes128
