@@ -19,6 +19,10 @@ struct Vec4 {
     return bytesRep[i];
   }
 
+  array<Byte, 4>& bytes() {
+    return bytesRep;
+  }
+
   // Transformations
   Vec4& subWord() {
     subByte(&(*this)[0]);

@@ -53,21 +53,20 @@ struct Cipher {
     for (int i = key_length; i < expansion_length; ++i) {
       temp = r[i-1];
       if (i % key_length == 0) {
-        // TODO make this better
         Polynomial p1;
-        p1.base() = temp.rotWord()
-                        .subWord();
-        // TODO store round_constant as Vec4?
+        p1.bytes() = temp.rotWord()
+                         .subWord()
+                         .bytes();
         Polynomial p2(round_constant[i / key_length], 0 , 0, 0);
-        temp = add(p1, p2).base();
+        temp.bytes() = add(p1, p2).bytes();
       } else if (key_length > 6 && i % key_length == 4) {
         temp.subWord();
       }
       // TODO make this better
       Polynomial p1, p2;
-      p1.base() = r[i - key_length];
-      p2.base() = temp;
-      r[i] = add(p1, p2).base();
+      p1.bytes() = r[i - key_length].bytes();
+      p2.bytes() = temp.bytes();
+      r[i].bytes() = add(p1, p2).bytes();
     }
 
     return r;

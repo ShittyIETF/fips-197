@@ -29,12 +29,13 @@ struct Block {
   }
 
   // TODO check if there is a better (non-pointer) way to pass the roundKey
-  void addRoundKey(const Vec4 *roundKey) {
+  Block& addRoundKey(const Vec4 *roundKey) {
     for (int c = 0; c < 4; ++c) {
       for (int r = 0; r < 4; ++r) {
         (*this)[c][r] ^= roundKey[c][r];
       }
     }
+    return *this;
   }
 
   Block& subBytes() {
@@ -62,19 +63,19 @@ struct Block {
         (*this)[c][r] = cpy[(c + r) % 4][r];
       }
     }
-    return (*this);
+    return *this;
   }
 
   Block& mixColumns() {
     static const gf_2_8::Polynomial constPoly(0x02, 0x01, 0x01, 0x03);
-    Block cpy(*this);
+    Block cpy = *this;
 
     for (int c = 0; c < 4; ++c) {
       gf_2_8::Polynomial col;
-      col.base() = cpy[c];
+      col.bytes() = cpy[c].bytes();
 
       gf_2_8::Polynomial newCol = gf_2_8::mul(constPoly, col);
-      (*this)[c] = newCol.base();
+      (*this)[c].bytes() = newCol.bytes();
     }
 
     return *this;
