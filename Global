@@ -1,3 +1,5 @@
+#pragma once
+
 typedef unsigned char Byte;
 
 #include "Transformations"
@@ -6,3 +8,5 @@ using namespace Transformations;
 #include "GF28"
 using namespace gf_2_8;
 #include "Block"
+
+#include "Cipher"

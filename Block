@@ -1,3 +1,5 @@
+#pragma once
+
 // 128-bit block in column-major matrix form
 struct Block {
   array<Vec4, 4> cols;

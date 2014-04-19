@@ -9,9 +9,6 @@ using namespace std;
 
 #include "Global"
 
-#include "GF28"
-using namespace gf_2_8;
-
 int main() {
   printf("GF(2^8) Tests\n");
   printf("=============\n");
