@@ -70,8 +70,8 @@ namespace Transformations {
     return r;
   }
 
-  State subBytes(State s) {
-    State r;
+  Block subBytes(Block s) {
+    Block r;
     for (int i = 0; i < 4; ++i) {
       for (int j = 0; j < 4; ++j) {
         r[i][j] = subByte(s[i][j]);
@@ -80,8 +80,8 @@ namespace Transformations {
     return r;
   }
 
-  State subBytesInv(State s) {
-    State r;
+  Block subBytesInv(Block s) {
+    Block r;
     for (int i = 0; i < 4; ++i) {
       for (int j = 0; j < 4; ++j) {
         r[i][j] = subByteInv(s[i][j]);
@@ -90,19 +90,19 @@ namespace Transformations {
     return r;
   }
 
-  State shiftRows(State s) {
-    State res;
+  Block shiftRows(Block s) {
+    Block res;
     for (int r = 0; r < 4; ++r) {
       for (int c = 0; c < 4; ++c) {
-        res(r,c) = s(r, (c+r)%4);
+        res[c][r] = s[(c+r)%4][r];
       }
     }
     return res;
   }
 
-  State mixColumns(State s) {
+  Block mixColumns(Block s) {
     static const gf_2_8::Polynomial constPoly(0x02, 0x01, 0x01, 0x03);
-    State res;
+    Block res;
 
     for (int c = 0; c < 4; ++c) {
       gf_2_8::Polynomial col;
