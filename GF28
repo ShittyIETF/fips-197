@@ -35,7 +35,7 @@ namespace gf_2_8 {
   }
 
   struct Polynomial {
-    array<Byte, 4> bytesRep;
+    std::array<Byte, 4> bytesRep;
 
     Polynomial()
       : bytesRep{{0, 0, 0, 0}}
@@ -54,7 +54,7 @@ namespace gf_2_8 {
       return bytesRep[i];
     }
 
-    array<Byte, 4>& bytes() {
+    std::array<Byte, 4>& bytes() {
       return bytesRep;
     }
   };

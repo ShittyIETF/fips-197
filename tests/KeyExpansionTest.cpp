@@ -1,11 +1,4 @@
 #include <cstdio>
-#include <cstring>
-#include <iomanip>
-#include <string>
-#include <sstream>
-#include <array>
-#include <vector>
-using namespace std;
 
 #include "Global"
 
@@ -133,7 +126,7 @@ void testExpansion() {
     for (int r = 0; r < 4; ++r) {
       if (exp[c][r] != *expectedExp++) {
         // Not-equal, fail
-        printf("%d-bit Key Expansion Test -> FAIL\n", N);
+        std::printf("%d-bit Key Expansion Test -> FAIL\n", N);
         anyTestFailed = true;
         return;
       }
@@ -141,22 +134,22 @@ void testExpansion() {
   }
 
   // if no fails occurred, pass
-  printf("%d-bit Key Expansion Test -> PASS\n", N);
+  std::printf("%d-bit Key Expansion Test -> PASS\n", N);
 }
 
 int main() {
-  printf("Key Expansion Test\n");
-  printf("==================\n");
+  std::printf("Key Expansion Test\n");
+  std::printf("==================\n");
 
   testExpansion<128>();
   testExpansion<192>();
   testExpansion<256>();
 
   if (anyTestFailed) {
-    printf("Status: FAIL\n");
+    std::printf("Status: FAIL\n");
     return -1;
   }
 
-  printf("Status: SUCCESS\n");
+  std::printf("Status: SUCCESS\n");
   return 0;
 }

@@ -2,7 +2,7 @@
 
 // 128-bit block in column-major matrix form
 struct Block {
-  array<Vec4, 4> cols;
+  std::array<Vec4, 4> cols;
 
   Vec4& operator[](int i) {
     return cols[i];

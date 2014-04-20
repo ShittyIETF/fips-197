@@ -35,7 +35,7 @@ struct Cipher {
   };
 
   struct CipherKey {
-    array<Vec4, Cipher<N>::key_length> cols;
+    std::array<Vec4, Cipher<N>::key_length> cols;
 
     Vec4& operator[](int i) {
       return cols[i];
@@ -45,7 +45,7 @@ struct Cipher {
     }
   };
   struct CipherKeyExpansion {
-    array<Vec4, Cipher<N>::expansion_length> cols;
+    std::array<Vec4, Cipher<N>::expansion_length> cols;
 
     Vec4& operator[](int i) {
       return cols[i];

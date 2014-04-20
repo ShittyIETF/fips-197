@@ -3,7 +3,7 @@
 // 4-byte vector (for columns of the matrices)
 struct Vec4 {
   union {
-    array<Byte, 4> bytesRep;
+    std::array<Byte, 4> bytesRep;
     unsigned int uintRep;
   };
 
@@ -19,7 +19,7 @@ struct Vec4 {
     return bytesRep[i];
   }
 
-  array<Byte, 4>& bytes() {
+  std::array<Byte, 4>& bytes() {
     return bytesRep;
   }
 

@@ -1,11 +1,4 @@
 #include <cstdio>
-#include <cstring>
-#include <iomanip>
-#include <string>
-#include <sstream>
-#include <array>
-#include <vector>
-using namespace std;
 
 #include "Global"
 
@@ -25,8 +18,8 @@ Byte output[] = {
 };
 
 int main() {
-  printf("Cipher Test\n");
-  printf("==================\n");
+  std::printf("Cipher Test\n");
+  std::printf("==================\n");
 
   Cipher<128>::CipherKey key;
   Block inp;
@@ -49,13 +42,13 @@ int main() {
   }
 
   if (fail) {
-    printf("128-bit Cipher Test -> FAIL\n");
-    printf("Status: FAIL\n");
+    std::printf("128-bit Cipher Test -> FAIL\n");
+    std::printf("Status: FAIL\n");
     return -1;
   }
 
-  printf("128-bit Cipher Test -> PASS\n");
-  printf("Status: SUCCESS\n");
+  std::printf("128-bit Cipher Test -> PASS\n");
+  std::printf("Status: SUCCESS\n");
   return 0;
 
 

@@ -1,11 +1,4 @@
 #include <cstdio>
-#include <cstring>
-#include <iomanip>
-#include <string>
-#include <sstream>
-#include <array>
-#include <vector>
-using namespace std;
 
 #include "Global"
 
@@ -85,12 +78,12 @@ void testEncryption() {
     for (int r = 0; r < 4; ++r) {
       if (out[c][r] != ExampleVector<N>::ciphertext[4 * c + r]) {
         anyTestFailed = true;
-        printf("%d-bit Encrypt Test -> FAIL\n", N);
+        std::printf("%d-bit Encrypt Test -> FAIL\n", N);
         return;
       }
     }
   }
-  printf("%d-bit Encrypt Test -> PASS\n", N);
+  std::printf("%d-bit Encrypt Test -> PASS\n", N);
 }
 
 template <int N>
@@ -115,17 +108,17 @@ void testDecryption() {
     for (int r = 0; r < 4; ++r) {
       if (out[c][r] != ExampleVector<N>::plaintext[4 * c + r]) {
         anyTestFailed = true;
-        printf("%d-bit Decrypt Test -> FAIL\n", N);
+        std::printf("%d-bit Decrypt Test -> FAIL\n", N);
         return;
       }
     }
   }
-  printf("%d-bit Decrypt Test -> PASS\n", N);
+  std::printf("%d-bit Decrypt Test -> PASS\n", N);
 }
 
 int main() {
-  printf("Example Vectors Test\n");
-  printf("====================\n");
+  std::printf("Example Vectors Test\n");
+  std::printf("====================\n");
 
   testEncryption<128>();
   testDecryption<128>();
@@ -135,10 +128,10 @@ int main() {
   testDecryption<256>();
 
   if (anyTestFailed) {
-    printf("Status: FAIL\n");
+    std::printf("Status: FAIL\n");
     return -1;
   }
 
-  printf("Status: SUCCESS\n");
+  std::printf("Status: SUCCESS\n");
   return 0;
 }
