@@ -108,7 +108,23 @@ struct Cipher {
     return state;
   }
 
-  static Block decrypt(const CipherKeyExpansion &key, const Block &input);
+  static Block decrypt(const CipherKeyExpansion &key, const Block &input) {
+    Block state = input;
+    state.addRoundKey(&key[4 * num_rounds]);
+
+    for (int round = num_rounds-1; round >= 1; --round) {
+      state.shiftRowsInv()
+           .subBytesInv()
+           .addRoundKey(&key[4 * round])
+           .mixColumnsInv();
+    }
+
+    state.shiftRowsInv()
+         .subBytesInv()
+         .addRoundKey(&key[0]);
+
+    return state;
+  }
 };
 
 

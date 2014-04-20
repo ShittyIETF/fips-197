@@ -13,7 +13,7 @@ using namespace std;
 template <int N> struct ExampleVector {
   static Byte key[];
   static Byte plaintext[];
-  static Byte output[];
+  static Byte ciphertext[];
 };
 
 // Example vectors for 128-bit key length
@@ -25,7 +25,7 @@ template <> Byte ExampleVector<128>::plaintext[] = {
   0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99,
   0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
 };
-template <> Byte ExampleVector<128>::output[] = {
+template <> Byte ExampleVector<128>::ciphertext[] = {
   0x69, 0xc4, 0xe0, 0xd8, 0x6a, 0x7b, 0x04, 0x30, 0xd8, 0xcd,
   0xb7, 0x80, 0x70, 0xb4, 0xc5, 0x5a,
 };
@@ -40,7 +40,7 @@ template <> Byte ExampleVector<192>::plaintext[] = {
   0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99,
   0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
 };
-template <> Byte ExampleVector<192>::output[] = {
+template <> Byte ExampleVector<192>::ciphertext[] = {
   0xdd, 0xa9, 0x7c, 0xa4, 0x86, 0x4c, 0xdf, 0xe0, 0x6e, 0xaf,
   0x70, 0xa0, 0xec, 0x0d, 0x71, 0x91,
 };
@@ -56,7 +56,7 @@ template <> Byte ExampleVector<256>::plaintext[] = {
   0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99,
   0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
 };
-template <> Byte ExampleVector<256>::output[] = {
+template <> Byte ExampleVector<256>::ciphertext[] = {
   0x8e, 0xa2, 0xb7, 0xca, 0x51, 0x67, 0x45, 0xbf, 0xea, 0xfc,
   0x49, 0x90, 0x4b, 0x49, 0x60, 0x89,
 };
@@ -83,7 +83,7 @@ void testEncryption() {
 
   for (int c = 0; c < 4; ++c) {
     for (int r = 0; r < 4; ++r) {
-      if (out[c][r] != ExampleVector<N>::output[4 * c + r]) {
+      if (out[c][r] != ExampleVector<N>::ciphertext[4 * c + r]) {
         anyTestFailed = true;
         printf("%d-bit Encrypt Test -> FAIL\n", N);
         return;
@@ -95,8 +95,32 @@ void testEncryption() {
 
 template <int N>
 void testDecryption() {
-  printf("%d-bit Decrypt Test -> UNIMPLEMENTED\n", N);
-  anyTestFailed = true;
+  typename Cipher<N>::CipherKey key;
+  Block in;
+
+  for (int c = 0; c < 4; ++c) {
+    for (int r = 0; r < 4; ++r) {
+      in[c][r] = ExampleVector<N>::ciphertext[4 * c + r];
+    }
+  }
+  for (int c = 0; c < Cipher<N>::key_length; ++c) {
+    for (int r = 0; r < 4; ++r) {
+      key[c][r] = ExampleVector<N>::key[4 * c + r];
+    }
+  }
+
+  Block out = Cipher<N>::decrypt(Cipher<N>::expandKey(key), in);
+
+  for (int c = 0; c < 4; ++c) {
+    for (int r = 0; r < 4; ++r) {
+      if (out[c][r] != ExampleVector<N>::plaintext[4 * c + r]) {
+        anyTestFailed = true;
+        printf("%d-bit Decrypt Test -> FAIL\n", N);
+        return;
+      }
+    }
+  }
+  printf("%d-bit Decrypt Test -> PASS\n", N);
 }
 
 int main() {

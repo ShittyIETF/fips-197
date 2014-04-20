@@ -66,8 +66,33 @@ struct Block {
     return *this;
   }
 
+  Block& shiftRowsInv() {
+    Block cpy(*this);
+    for (int r = 0; r < 4; ++r) {
+      for (int c = 0; c < 4; ++c) {
+        (*this)[(c + r) % 4][r] = cpy[c][r];
+      }
+    }
+    return *this;
+  }
+
   Block& mixColumns() {
     static const gf_2_8::Polynomial constPoly(0x02, 0x01, 0x01, 0x03);
+    Block cpy = *this;
+
+    for (int c = 0; c < 4; ++c) {
+      gf_2_8::Polynomial col;
+      col.bytes() = cpy[c].bytes();
+
+      gf_2_8::Polynomial newCol = gf_2_8::mul(constPoly, col);
+      (*this)[c].bytes() = newCol.bytes();
+    }
+
+    return *this;
+  }
+
+  Block& mixColumnsInv() {
+    static const gf_2_8::Polynomial constPoly(0x0e, 0x09, 0x0d, 0x0b);
     Block cpy = *this;
 
     for (int c = 0; c < 4; ++c) {
