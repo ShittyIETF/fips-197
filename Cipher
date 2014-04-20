@@ -1,3 +1,4 @@
+#pragma once
 
 // AES counts (Fig. 4)
 template <int N> struct CipherEnum;
@@ -33,9 +34,26 @@ struct Cipher {
     expansion_length = block_size * (num_rounds + 1)
   };
 
-  // TODO don't use inheritance for types like array<>
-  struct CipherKey :          public array<Vec4, Cipher<N>::key_length> {};
-  struct CipherKeyExpansion : public array<Vec4, Cipher<N>::expansion_length> {};
+  struct CipherKey {
+    array<Vec4, Cipher<N>::key_length> cols;
+
+    Vec4& operator[](int i) {
+      return cols[i];
+    }
+    const Vec4& operator[](int i) const {
+      return cols[i];
+    }
+  };
+  struct CipherKeyExpansion {
+    array<Vec4, Cipher<N>::expansion_length> cols;
+
+    Vec4& operator[](int i) {
+      return cols[i];
+    }
+    const Vec4& operator[](int i) const {
+      return cols[i];
+    }
+  };
 
   static CipherKeyExpansion expandKey(const CipherKey &key) {
     static Byte round_constant[11] = {
@@ -52,20 +70,20 @@ struct Cipher {
     for (int i = key_length; i < expansion_length; ++i) {
       temp = r[i-1];
       if (i % key_length == 0) {
-        // TODO make this better
         Polynomial p1;
-        p1.base() = subWord(rotWord(temp));
-        // TODO store round_constant as Vec4?
+        p1.bytes() = temp.rotWord()
+                         .subWord()
+                         .bytes();
         Polynomial p2(round_constant[i / key_length], 0 , 0, 0);
-        temp = add(p1, p2).base();
+        temp.bytes() = add(p1, p2).bytes();
       } else if (key_length > 6 && i % key_length == 4) {
-        temp = subWord(temp);
+        temp.subWord();
       }
       // TODO make this better
       Polynomial p1, p2;
-      p1.base() = r[i - key_length];
-      p2.base() = temp;
-      r[i] = add(p1, p2).base();
+      p1.bytes() = r[i - key_length].bytes();
+      p2.bytes() = temp.bytes();
+      r[i].bytes() = add(p1, p2).bytes();
     }
 
     return r;
@@ -76,24 +94,21 @@ struct Cipher {
     state.addRoundKey(&key[0]);
 
     for (int round = 1; round < num_rounds; ++round) {
-      // TODO: make these object oriented
-      state = subBytes(state);
-      state = shiftRows(state);
-      state = mixColumns(state);
-      state.addRoundKey(&key[4 * round]);
+      state.subBytes()
+           .shiftRows()
+           .mixColumns()
+           .addRoundKey(&key[4 * round]);
     }
 
     // No mixColumns at the final round
-    state = subBytes(state);
-    state = shiftRows(state);
-    state.addRoundKey(&key[4 * num_rounds]);
+    state.subBytes()
+         .shiftRows()
+         .addRoundKey(&key[4 * num_rounds]);
 
     return state;
   }
 
   static Block decrypt(const CipherKeyExpansion &key, const Block &input);
-
-
 };
 
 

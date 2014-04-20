@@ -1,57 +1,12 @@
-typedef unsigned char   Byte;
-typedef vector<Byte>    Bytes;
-typedef unsigned int    Word;
+#pragma once
 
-// 4-byte vector (for columns of the matrices)
-struct Vec4 : public array<Byte, 4> {
-  typedef array<Byte, 4> base_type;
+typedef unsigned char Byte;
 
-  Vec4() : array<Byte, 4>{{0, 0, 0, 0}}
-  {
-  }
-};
+#include "Transformations"
+using namespace Transformations;
+#include "Vec4"
+#include "GF28"
+using namespace gf_2_8;
+#include "Block"
 
-// 128-bit block for input/output
-struct IOBlock : public array<Byte, 16> {};
-
-// 128-bit block in column-major matrix form
-struct Block : public array<Vec4, 4> {
-  typedef array<Vec4, 4> base_type;
-
-  Block() {}
-
-  Block& operator<<(const IOBlock &in) {
-    for (int r = 0; r < 4; ++r) {
-      for (int c = 0; c < 4; ++c) {
-        (*this)(r,c) = in[r + 4*c];
-      }
-    }
-    return *this;
-  }
-  Block& operator>>(IOBlock &in) {
-    for (int r = 0; r < 4; ++r) {
-      for (int c = 0; c < 4; ++c) {
-        in[r + 4*c] = (*this)(r,c);
-      }
-    }
-    return *this;
-  }
-
-  // Element accessor style: m(r, c)
-  // Indices start from zero
-  Byte& operator()(int row, int col) {
-    return (*this)[col][row];
-  }
-
-  // TODO check if there is a better (non-pointer) way to pass the roundKey
-  void addRoundKey(const Vec4 *roundKey) {
-    for (int c = 0; c < 4; ++c) {
-      for (int r = 0; r < 4; ++r) {
-        (*this)[c][r] ^= roundKey[c][r];
-      }
-    }
-  }
-};
-
-// TODO remove this
-typedef Block State;
+#include "Cipher"

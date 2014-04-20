@@ -1,0 +1,51 @@
+#pragma once
+
+// 4-byte vector (for columns of the matrices)
+struct Vec4 {
+  union {
+    array<Byte, 4> bytesRep;
+    unsigned int uintRep;
+  };
+
+  Vec4()
+    : uintRep(0)
+  {
+  }
+
+  Byte& operator[](int i) {
+    return bytesRep[i];
+  }
+  const Byte& operator[](int i) const {
+    return bytesRep[i];
+  }
+
+  array<Byte, 4>& bytes() {
+    return bytesRep;
+  }
+
+  // Transformations
+  Vec4& subWord() {
+    subByte(&(*this)[0]);
+    subByte(&(*this)[1]);
+    subByte(&(*this)[2]);
+    subByte(&(*this)[3]);
+    return *this;
+  }
+
+  Vec4& subWordInv() {
+    subByteInv(&(*this)[0]);
+    subByteInv(&(*this)[1]);
+    subByteInv(&(*this)[2]);
+    subByteInv(&(*this)[3]);
+    return *this;
+  }
+
+  Vec4& rotWord() {
+    Byte a0 = (*this)[0];
+    (*this)[0] = (*this)[1];
+    (*this)[1] = (*this)[2];
+    (*this)[2] = (*this)[3];
+    (*this)[3] = a0;
+    return *this;
+  }
+};

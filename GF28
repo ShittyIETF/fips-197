@@ -1,3 +1,4 @@
+#pragma once
 // Section 4. Mathematical Preliminaries
 // Finite field arithmetic over 2^8
 
@@ -33,22 +34,28 @@ namespace gf_2_8 {
     return (Byte)res;
   }
 
-  struct Polynomial : public Vec4 {
+  struct Polynomial {
+    array<Byte, 4> bytesRep;
+
     Polynomial()
+      : bytesRep{{0, 0, 0, 0}}
     {
     }
 
-    // TODO this is a shitty way to initialize
-    Polynomial(Byte x0, Byte x1, Byte x2, Byte x3)
+    Polynomial(Byte a, Byte b, Byte c, Byte d)
+      : bytesRep{{a, b, c, d}}
     {
-      (*this)[0] = x0;
-      (*this)[1] = x1;
-      (*this)[2] = x2;
-      (*this)[3] = x3;
     }
 
-    Vec4& base() {
-      return static_cast<Vec4&>(*this);
+    Byte& operator[](int i) {
+      return bytesRep[i];
+    }
+    const Byte& operator[](int i) const {
+      return bytesRep[i];
+    }
+
+    array<Byte, 4>& bytes() {
+      return bytesRep;
     }
   };
 

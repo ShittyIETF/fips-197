@@ -1,0 +1,83 @@
+#pragma once
+
+// 128-bit block in column-major matrix form
+struct Block {
+  array<Vec4, 4> cols;
+
+  Vec4& operator[](int i) {
+    return cols[i];
+  }
+  const Vec4& operator[](int i) const {
+    return cols[i];
+  }
+
+  void read(const Byte *in) {
+    for (int c = 0; c < 4; ++c) {
+      for (int r = 0; r < 4; ++r) {
+        (*this)[c][r] = *in;
+        ++in;
+      }
+    }
+  }
+  void write(Byte *out) {
+    for (int c = 0; c < 4; ++c) {
+      for (int r = 0; r < 4; ++r) {
+        *out = (*this)[c][r];
+        ++out;
+      }
+    }
+  }
+
+  // TODO check if there is a better (non-pointer) way to pass the roundKey
+  Block& addRoundKey(const Vec4 *roundKey) {
+    for (int c = 0; c < 4; ++c) {
+      for (int r = 0; r < 4; ++r) {
+        (*this)[c][r] ^= roundKey[c][r];
+      }
+    }
+    return *this;
+  }
+
+  Block& subBytes() {
+    for (int c = 0; c < 4; ++c) {
+      for (int r = 0; r < 4; ++r) {
+        subByte(&(*this)[c][r]);
+      }
+    }
+    return *this;
+  }
+
+  Block& subBytesInv() {
+    for (int c = 0; c < 4; ++c) {
+      for (int r = 0; r < 4; ++r) {
+        subByteInv(&(*this)[c][r]);
+      }
+    }
+    return *this;
+  }
+
+  Block& shiftRows() {
+    Block cpy(*this);
+    for (int r = 0; r < 4; ++r) {
+      for (int c = 0; c < 4; ++c) {
+        (*this)[c][r] = cpy[(c + r) % 4][r];
+      }
+    }
+    return *this;
+  }
+
+  Block& mixColumns() {
+    static const gf_2_8::Polynomial constPoly(0x02, 0x01, 0x01, 0x03);
+    Block cpy = *this;
+
+    for (int c = 0; c < 4; ++c) {
+      gf_2_8::Polynomial col;
+      col.bytes() = cpy[c].bytes();
+
+      gf_2_8::Polynomial newCol = gf_2_8::mul(constPoly, col);
+      (*this)[c].bytes() = newCol.bytes();
+    }
+
+    return *this;
+  }
+};

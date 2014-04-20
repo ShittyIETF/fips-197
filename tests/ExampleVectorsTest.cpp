@@ -9,14 +9,6 @@ using namespace std;
 
 #include "Global"
 
-#include "GF28"
-using namespace gf_2_8;
-
-#include "Transformations"
-using namespace Transformations;
-
-#include "Cipher"
-
 // Values are taken from Appendix C.
 template <int N> struct ExampleVector {
   static Byte key[];
