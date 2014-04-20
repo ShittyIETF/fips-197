@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cstring>
 
 #include "Global"
 
@@ -111,26 +112,19 @@ void testExpansion() {
 
   // Copy data to CipherKey structure
   typename Cipher<N>::CipherKey key;
-  for (int c = 0; c < key_length; ++c) {
-    for (int r = 0; r < 4; ++r) {
-      key[c][r] = KeyExpansionExample<N>::key[4*c + r];
-    }
-  }
+  key.read(KeyExpansionExample<N>::key);
 
   // Expand the key into `exp`
   typename Cipher<N>::CipherKeyExpansion exp = Cipher<N>::expandKey(key);
+  Byte actualExpansion[4 * Cipher<N>::expansion_length];
+  exp.write(actualExpansion);
 
   // Compare expansion with expected value
-  Byte *expectedExp = KeyExpansionExample<N>::exp;
-  for (int c = 0; c < expansion_length; ++c) {
-    for (int r = 0; r < 4; ++r) {
-      if (exp[c][r] != *expectedExp++) {
-        // Not-equal, fail
-        std::printf("%d-bit Key Expansion Test -> FAIL\n", N);
-        anyTestFailed = true;
-        return;
-      }
-    }
+  if (memcmp(actualExpansion, KeyExpansionExample<N>::exp, 4 * Cipher<N>::expansion_length) != 0) {
+    // Not-equal, fail
+    std::printf("%d-bit Key Expansion Test -> FAIL\n", N);
+    anyTestFailed = true;
+    return;
   }
 
   // if no fails occurred, pass

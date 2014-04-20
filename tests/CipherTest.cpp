@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cstring>
 
 #include "Global"
 
@@ -20,25 +21,20 @@ Byte output[] = {
 int main() {
   std::printf("Cipher Test\n");
   std::printf("==================\n");
-
-  Cipher<128>::CipherKey key;
-  Block inp;
-  for (int c = 0; c < 4; ++c) {
-    for (int r = 0; r < 4; ++r) {
-      key[c][r] = cipherKey[4 * c + r];
-      inp[c][r] = input[4 * c + r];
-    }
-  }
-
-  Block out = Cipher<128>::encrypt(Cipher<128>::expandKey(key), inp);
   bool fail = 0;
 
-  for (int c = 0; c < 4; ++c) {
-    for (int r = 0; r < 4; ++r) {
-      if (out[c][r] != output[4 * c + r]) {
-        fail = true;
-      }
-    }
+  Cipher<128>::CipherKey key;
+  Block in;
+
+  key.read(cipherKey);
+  in.read(input);
+
+  Block out = Cipher<128>::encrypt(Cipher<128>::expandKey(key), in);
+
+  Byte actualOutput[4 * Cipher<128>::block_size];
+  out.write(actualOutput);
+  if (std::memcmp(output, actualOutput, 4 * Cipher<128>::block_size) != 0) {
+    fail = true;
   }
 
   if (fail) {

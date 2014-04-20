@@ -43,6 +43,24 @@ struct Cipher {
     const Vec4& operator[](int i) const {
       return cols[i];
     }
+
+    void read(const Byte *in) {
+      for (int c = 0; c < key_length; ++c) {
+        for (int r = 0; r < 4; ++r) {
+          (*this)[c][r] = *in;
+          ++in;
+        }
+      }
+    }
+
+    void write(Byte *out) {
+      for (int c = 0; c < key_length; ++c) {
+        for (int r = 0; r < 4; ++r) {
+          *out = (*this)[c][r];
+          ++out;
+        }
+      }
+    }
   };
   struct CipherKeyExpansion {
     std::array<Vec4, Cipher<N>::expansion_length> cols;
@@ -52,6 +70,24 @@ struct Cipher {
     }
     const Vec4& operator[](int i) const {
       return cols[i];
+    }
+
+    void read(const Byte *in) {
+      for (int c = 0; c < expansion_length; ++c) {
+        for (int r = 0; r < 4; ++r) {
+          (*this)[c][r] = *in;
+          ++in;
+        }
+      }
+    }
+
+    void write(Byte *out) {
+      for (int c = 0; c < expansion_length; ++c) {
+        for (int r = 0; r < 4; ++r) {
+          *out = (*this)[c][r];
+          ++out;
+        }
+      }
     }
   };
 

@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cstring>
 
 #include "Global"
 
@@ -61,27 +62,17 @@ void testEncryption() {
   typename Cipher<N>::CipherKey key;
   Block in;
 
-  for (int c = 0; c < 4; ++c) {
-    for (int r = 0; r < 4; ++r) {
-      in[c][r] = ExampleVector<N>::plaintext[4 * c + r];
-    }
-  }
-  for (int c = 0; c < Cipher<N>::key_length; ++c) {
-    for (int r = 0; r < 4; ++r) {
-      key[c][r] = ExampleVector<N>::key[4 * c + r];
-    }
-  }
-
+  in.read(ExampleVector<N>::plaintext);
+  key.read(ExampleVector<N>::key);
   Block out = Cipher<N>::encrypt(Cipher<N>::expandKey(key), in);
 
-  for (int c = 0; c < 4; ++c) {
-    for (int r = 0; r < 4; ++r) {
-      if (out[c][r] != ExampleVector<N>::ciphertext[4 * c + r]) {
-        anyTestFailed = true;
-        std::printf("%d-bit Encrypt Test -> FAIL\n", N);
-        return;
-      }
-    }
+  Byte ciphertext[4 * Cipher<N>::block_size];
+  out.write(ciphertext);
+
+  if (memcmp(ciphertext, ExampleVector<N>::ciphertext, 4 * Cipher<N>::block_size) != 0) {
+    anyTestFailed = true;
+    std::printf("%d-bit Encrypt Test -> FAIL\n", N);
+    return;
   }
   std::printf("%d-bit Encrypt Test -> PASS\n", N);
 }
@@ -91,27 +82,17 @@ void testDecryption() {
   typename Cipher<N>::CipherKey key;
   Block in;
 
-  for (int c = 0; c < 4; ++c) {
-    for (int r = 0; r < 4; ++r) {
-      in[c][r] = ExampleVector<N>::ciphertext[4 * c + r];
-    }
-  }
-  for (int c = 0; c < Cipher<N>::key_length; ++c) {
-    for (int r = 0; r < 4; ++r) {
-      key[c][r] = ExampleVector<N>::key[4 * c + r];
-    }
-  }
-
+  in.read(ExampleVector<N>::ciphertext);
+  key.read(ExampleVector<N>::key);
   Block out = Cipher<N>::decrypt(Cipher<N>::expandKey(key), in);
 
-  for (int c = 0; c < 4; ++c) {
-    for (int r = 0; r < 4; ++r) {
-      if (out[c][r] != ExampleVector<N>::plaintext[4 * c + r]) {
-        anyTestFailed = true;
-        std::printf("%d-bit Decrypt Test -> FAIL\n", N);
-        return;
-      }
-    }
+  Byte plaintext[4 * Cipher<N>::block_size];
+  out.write(plaintext);
+
+  if (memcmp(plaintext, ExampleVector<N>::plaintext, 4 * Cipher<N>::block_size) != 0) {
+    anyTestFailed = true;
+    std::printf("%d-bit Decrypt Test -> FAIL\n", N);
+    return;
   }
   std::printf("%d-bit Decrypt Test -> PASS\n", N);
 }
